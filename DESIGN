@@ -2,9 +2,19 @@ Project 02
 ACCORD CHAT
 Members:  Michael Cheng, Ricky Chen, Edmond Wong
 
-DESCRIPTION
+PROJECT DESCRIPTION
 Our project will allow you to interact with your desired community, over a server in a lobby. 
-You can chat with text or share files using Accord Chat. You can also play a minigame with your friends. 
+You can text chat or share files using Accord Chat. You can also play a minigame with lobby members, with the option of tic-tac-toe
+or hangman.
+
+USAGE DESCRIPTION
+Accord Chat is a TUI program, using ncurses to achieve this. There is a single text input line, and special commands are activated using !<command>.
+For example, !tictactoe <player name> would start the tic-tac-toe minigame with your desired player.
+
+TECHNICAL DESIGN
+Our project will draw from numerous topics learned this semester. We will need to work with files in order to share them.
+We will use forking extensively, in order to make subservers for lobbies, and subservers of those to interact with the client.
+This project will make use of sockets to assist in networking. The
 
 COMPONENTS
 makefile
@@ -20,22 +30,21 @@ datastructures.h
 add-ons/minigame.h
 
 LIBRARIES
-Ncurses
+ncurses
 
-STRETCHES
-VOICE CHAT
-SCREEN SHARING
+POSSIBLE FEATURES (STRECHES)
+-Voice chat
+-Screen sharing
 
-client.c
-	Connects to server and displays information
+ROLES:
+Networking (sockets): Edmond
+TUI and Minigames: Michael
+Networking and Minigames: Ricky
 
-server.c
-	Handles connections to clients
+TIMELINE:
+01/04 - Finish basic networking; text chat and file sharing works between two people.
+01/05 - Implement group chat, where chat is sent to >2 people.
+01/08 - Implement multiple lobbies.
+01/11 - Create minigames.
+01/14 - Touch up TUI.
 
-datastructures.c
-	Stores chat logs
-Allows the usage of arrow keys when typing messages
-
-
-add-ons/minigame.c
-	Code for the minigame
