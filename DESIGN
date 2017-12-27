@@ -1,0 +1,41 @@
+Project 02
+ACCORD CHAT
+Members:  Michael Cheng, Ricky Chen, Edmond Wong
+
+DESCRIPTION
+Our project will allow you to interact with your desired community, over a server in a lobby. 
+You can chat with text or share files using Accord Chat. You can also play a minigame with your friends. 
+
+COMPONENTS
+makefile
+
+client.c
+server.c
+datastructures.c
+add-ons/minigame.c
+
+client.h
+server.h
+datastructures.h
+add-ons/minigame.h
+
+LIBRARIES
+Ncurses
+
+STRETCHES
+VOICE CHAT
+SCREEN SHARING
+
+client.c
+	Connects to server and displays information
+
+server.c
+	Handles connections to clients
+
+datastructures.c
+	Stores chat logs
+Allows the usage of arrow keys when typing messages
+
+
+add-ons/minigame.c
+	Code for the minigame
