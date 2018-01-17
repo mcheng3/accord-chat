@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
   if (argc == 2)
     server_socket = client_setup( argv[1]);
   else
-    server_socket = client_setup( TEST_IP );
+    server_socket = client_setup( CS16 );
 
   while (1) {
     printf("enter data: ");
