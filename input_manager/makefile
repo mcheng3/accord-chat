@@ -1,4 +1,4 @@
-.PHONY input_manager.o stuff.o
+.PHONY: input_manager.o stuff.o
 
 input_manager.o: data_structures/dqueue.o input.o stuff.o
 	ld -r data_structures/dqueue.o input.o stuff.o -o input_manager.o
