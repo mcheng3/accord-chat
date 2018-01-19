@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include "stuff.h"
 
 static void move_back(WINDOW * win,int spaces){
 	int y,x;
@@ -159,18 +160,7 @@ void parse(){
 	//writes to variables
 }
 
-int execute(){ 
-//return 0 if child finished
-// 1 if exit has been called
-// 2 if its the parent process
-	return 2;
-}
-
-int display_output(){
-
-}
-
-int input(){
+void input_manager_init(){
 	input_init(20,10);
 	selected_win = stdscr;
 	history_index = -1;
@@ -179,21 +169,8 @@ int input(){
 	//remember to actually set path
 	path = "channel";
 	end = "$ ";
-	while(1){
-		//gets input and handles basic terminal interfacing
-		parse();	
-		//forks and executes the process
-		int end = execute();	
-		if(end == 0){
-			return 0;
-		}
-		else if(end == 1){
-			break;
-		}
-		else if(end == 2){
-			display_output();
-		}
-	}
-	endwin();
-	return 0;
+}
+
+void tick(){
+	parse();
 }
