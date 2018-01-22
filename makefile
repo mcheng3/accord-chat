@@ -32,7 +32,7 @@ networking.o: networking.c networking.h
 chat_interface.o: chat_interface.c chat_interface.h
 	gcc -c chat_interface.c
 
-chat_interface_test: chat_interface.c chat_interface_test.c
+chat_interface_test: chat_interface.c chat_interface_test.c chat_interface.h
 	gcc -o chat_interface_test chat_interface.c
 	./chat_interface_test
 
