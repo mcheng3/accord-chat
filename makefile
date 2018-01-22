@@ -29,6 +29,13 @@ forking_server.o: forking_server.c networking.h
 networking.o: networking.c networking.h
 	gcc -c networking.c
 
+chat_interface.o: chat_interface.c chat_interface.h
+	gcc -c chat_interface.c
+
+chat_interface_test: chat_interface.c chat_interface_test.c
+	gcc -o chat_interface_test chat_interface.c
+	./chat_interface_test
+
 clean:
 	rm *.o
 	rm *~
