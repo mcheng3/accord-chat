@@ -2,6 +2,7 @@
 
 void process(char *s);
 void subserver(int from_client);
+void print_servers();
 
 int main() {
 
@@ -9,15 +10,24 @@ int main() {
   int f;
   listen_socket = server_setup();
 
+  int client_socket = server_connect(listen_socket);
+  printf("Select a server\n");
+  print_servers();
+  
   while (1) {
 
-    int client_socket = server_connect(listen_socket);
+    //client_socket = server_connect(listen_socket);
     f = fork();
+    
     if (f == 0)
       subserver(client_socket);
     else
       close(client_socket);
   }
+}
+
+void print_servers(){
+  printf("only one server rn\n");
 }
 
 void subserver(int client_socket) {
