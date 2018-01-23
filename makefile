@@ -23,7 +23,7 @@ client.o: client.c networking.h
 select_server.o: select_server.c networking.h
 	gcc -c select_server.c
 
-forking_server.o: forking_server.c networking.h
+forking_server.o: forking_server.c networking.h control.o pipe_networking.o
 	gcc -c forking_server.c
 
 networking.o: networking.c networking.h
@@ -35,7 +35,11 @@ chat_interface.o: chat_interface.c chat_interface.h
 chat_interface_test: chat_interface.c chat_interface_test.c chat_interface.h
 	gcc -o chat_interface_test chat_interface.c
 	./chat_interface_test
+control.o: control.c control.h
+	gcc -c control.c
 
+pipe_networking.o: pipe_networking.c pipe_networking.h
+	gcc -c pipe_networking.c 
 clean:
 	rm *.o
 	rm *~

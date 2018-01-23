@@ -1,5 +1,6 @@
 #include "networking.h"
 #include "pipe_networking.h"
+#include "control.h"
 
 void process(char *s);
 void subserver(int from_client);
@@ -32,6 +33,11 @@ int main() {
         from_sub = pserver_setup();
         to_sub = pserver_connect();
       }
+    }
+
+    //broadcast handler
+    else{
+      
     }
   }
 
