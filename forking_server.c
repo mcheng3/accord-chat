@@ -1,11 +1,12 @@
 #include "networking.h"
+#include "pipe_networking.h"
 
 void process(char *s);
 void subserver(int from_client);
 void print_servers();
 
 int main() {
-
+  //main server
   int listen_socket;
   int f;
   listen_socket = server_setup();
@@ -13,16 +14,45 @@ int main() {
   int client_socket = server_connect(listen_socket);
   printf("Select a server\n");
   print_servers();
-  
-  while (1) {
 
-    //client_socket = server_connect(listen_socket);
-    f = fork();
+  f = fork();
+
+  //broadcast server
+  if (f == 0){
+    int *from_subs = (int *)calloc(10, sizeof(int));
+    int *to_subs = (int *)calloc(10, sizeof(int));
+    int from_sub;
+    int to_sub;
     
-    if (f == 0)
-      subserver(client_socket);
-    else
-      close(client_socket);
+    fork();
+    
+    //connection handler
+    if (f == 0){
+      while (1){
+        from_sub = pserver_setup();
+        to_sub = pserver_connect();
+      }
+    }
+  }
+
+  else{
+  
+    while (1) {
+
+      //client_socket = server_connect(listen_socket);
+    
+      f = fork();
+    
+      //client server
+      if (f == 0){
+      
+        subserver(client_socket);
+      
+      }
+      else{
+        close(client_socket);
+      }
+    }
   }
 }
 

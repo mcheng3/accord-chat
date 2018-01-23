@@ -11,7 +11,7 @@
 
   returns the file descriptor for the upstream pipe.
   =========================*/
-int server_setup() {
+int pserver_setup() {
   int from_client;
   
   mkfifo("luigi", 0600);
@@ -34,7 +34,7 @@ int server_setup() {
 
   returns the file descriptor for the downstream pipe.
   =========================*/
-int server_connect(int from_client) {
+int pserver_connect(int from_client) {
   char buffer[HANDSHAKE_BUFFER_SIZE];
   
   read(from_client, buffer, sizeof(buffer));
@@ -60,7 +60,7 @@ int server_connect(int from_client) {
 
   returns the file descriptor for the upstream pipe.
   =========================*/
-int server_handshake(int *to_client) {
+int pserver_handshake(int *to_client) {
   return 1;
 }
 
@@ -73,7 +73,7 @@ int server_handshake(int *to_client) {
 
   returns the file descriptor for the downstream pipe.
   =========================*/
-int client_handshake(int *to_server) {
+int pclient_handshake(int *to_server) {
 
   int from_server;
   char buffer[HANDSHAKE_BUFFER_SIZE];
