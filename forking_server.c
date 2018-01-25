@@ -45,6 +45,7 @@ int main() {
 	mess.kill = 1;
 	up_sem(mess_sem);
 	wait(&status);
+	printf("[connection handler]: client added\n");
       }
 	
       //broadcast handler
@@ -102,6 +103,7 @@ int main() {
 
 void broadcast(union sub_fds *fds, union messages mess, int mess_sem){
   int i;
+  int j;
   char *buffer = (char *)calloc(256, sizeof(char));
   while(1){
     while (mess.ready == 0){
@@ -113,7 +115,10 @@ void broadcast(union sub_fds *fds, union messages mess, int mess_sem){
   
     for(i = 0; i < 10; i++){
       read(fds[i].from_sub, buffer, 256);
-      write(fds[i].to_sub, buffer, 256);
+      for(j = 0; j < 10; j++){
+	if (j != i)
+	  write(fds[i].to_sub, buffer, 256);
+      }
     }
 
     mess.ready = 0;
