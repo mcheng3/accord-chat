@@ -33,19 +33,26 @@ int main() {
     while (1){
       from_sub = pserver_setup();
       to_sub = pserver_connect(from_sub);
+
+      //make from_sub not block upon read
+      int flags = fcntl(from_sub, F_GETFL, 0);
+      fcntl(from_sub, F_SETFL, flags | O_NONBLOCK);
 	
       fds[free_spot].from_sub = from_sub;
       fds[free_spot].to_sub = to_sub;
       free_spot++;
 
+      
+      printf("[connection handler]: adding client...\n");
+      down_sem(mess_sem);
+      mess.kill = 1;
+      up_sem(mess_sem);
+      wait(&status);
+      printf("[connection handler]: client added\n");
+
       f = fork();
 
       if (f != 0){
-	down_sem(mess_sem);
-	mess.kill = 1;
-	up_sem(mess_sem);
-	wait(&status);
-	printf("[connection handler]: client added\n");
       }
 	
       //broadcast handler
@@ -111,18 +118,22 @@ void broadcast(union sub_fds *fds, union messages mess, int mess_sem){
 	exit(0);
     }
 
+    printf("broadcast server: messages > 0");
     down_sem(mess_sem);
   
     for(i = 0; i < 10; i++){
-      read(fds[i].from_sub, buffer, 256);
-      for(j = 0; j < 10; j++){
-	if (j != i)
-	  write(fds[j].to_sub, buffer, 256);
+      if (read(fds[i].from_sub, buffer, 256) > -1){
+	for(j = 0; j < 10; j++){
+	  if (j != i)
+	    write(fds[j].to_sub, buffer, 256);
+	}
       }
     }
 
     mess.ready = 0;
     up_sem(mess_sem);
+    
+    printf("broadcast server: message(s) broadcasted");
   }
 }
 
@@ -135,9 +146,10 @@ void subserver(int client_socket, int mess_sem, union messages mess, int to_hand
 
   while (read(client_socket, buffer, sizeof(buffer))) {
 
-    printf("[subserver %d] received: [%s]\n", getpid(), buffer);
+    printf("[clientserver %d] received: [%s]\n", getpid(), buffer);
     down_sem(mess_sem);
     write(to_handler, buffer, sizeof(buffer));
+    printf("[clientserver %d] wrote to handler\n", getpid());
     mess.ready++;
     up_sem(mess_sem);
     
