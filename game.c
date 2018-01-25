@@ -45,7 +45,7 @@ int hangman(char *phrase){
 			mvprintw(man_y[i],man_x[i],man_parts[i]);
 		}
 		
-		
+	    mvprintw(max_y/2, max_x/5+5, phrase);	
 		refresh();
 
 		usleep(DELAY);
@@ -57,6 +57,7 @@ int main(int argc, char *argv[]) {
 
 	initscr();
 	noecho();
+	cbreak();
 	curs_set(FALSE);
 
  // Global var `stdscr` is created by the call to `initscr()`
