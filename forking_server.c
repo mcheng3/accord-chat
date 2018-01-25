@@ -30,32 +30,31 @@ int main() {
     int status;
     
     //connection handler
-    if (f != 0){
-      while (1){
-        from_sub = pserver_setup();
-        to_sub = pserver_connect(from_sub);
+    while (1){
+      from_sub = pserver_setup();
+      to_sub = pserver_connect(from_sub);
 	
-	fds[free_spot].from_sub = from_sub;
-	fds[free_spot].to_sub = to_sub;
-	free_spot++;
+      fds[free_spot].from_sub = from_sub;
+      fds[free_spot].to_sub = to_sub;
+      free_spot++;
 
-	f = fork();
+      f = fork();
 
-	if (f != 0){
-	  down_sem(mess_sem);
-	  mess.kill = 1;
-	  up_sem(mess_sem);
-	  wait(&status);
-	}
+      if (f != 0){
+	down_sem(mess_sem);
+	mess.kill = 1;
+	up_sem(mess_sem);
+	wait(&status);
+      }
 	
-	//broadcast handler
-	else{
-	  broadcast(fds, mess, mess_sem);
-	}
+      //broadcast handler
+      else{
+	broadcast(fds, mess, mess_sem);
       }
     }
+  
   }
-
+  
   else{
     
     //main server
