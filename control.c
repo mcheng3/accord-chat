@@ -1,7 +1,7 @@
 #include "control.h"
 
 int create_sem(){
-  int sem_id = semget(SEM_KEY, 0, IPC_CREAT | 0644);
+  int sem_id = semget(SEM_KEY, 0, IPC_CREAT | 0666);
   
   union semun arg;
   arg.val = 1;
