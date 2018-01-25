@@ -66,12 +66,12 @@ int main() {
     printf("Select a server\n");
     print_servers();
     
-    f = fork();
   
     while (1) {
 
-      client_socket = server_connect(listen_socket);
-    
+      int client_socket = server_connect(listen_socket);
+      
+      f = fork();
     
       //client server
       if (f == 0){
