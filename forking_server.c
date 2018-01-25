@@ -117,7 +117,7 @@ void broadcast(union sub_fds *fds, union messages mess, int mess_sem){
       read(fds[i].from_sub, buffer, 256);
       for(j = 0; j < 10; j++){
 	if (j != i)
-	  write(fds[i].to_sub, buffer, 256);
+	  write(fds[j].to_sub, buffer, 256);
       }
     }
 
