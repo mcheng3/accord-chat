@@ -62,7 +62,7 @@ int main() {
     int listen_socket;
     listen_socket = server_setup();
 
-    int client_socket = server_connect(listen_socket);
+    //int client_socket = server_connect(listen_socket);
     printf("Select a server\n");
     print_servers();
     
@@ -70,7 +70,7 @@ int main() {
   
     while (1) {
 
-      //client_socket = server_connect(listen_socket);
+      client_socket = server_connect(listen_socket);
     
     
       //client server
