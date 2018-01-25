@@ -120,7 +120,7 @@ void broadcast(union sub_fds *fds, union messages *mess, int mess_sem){
   char *buffer = (char *)calloc(256, sizeof(char));
   while(1){
     while ((*mess).ready == 0){
-      if (kill > 0){
+      if ((*mess).kill > 0){
 	printf("broadcast server: client list updated");
 	exit(0);
       }
