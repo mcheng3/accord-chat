@@ -68,7 +68,6 @@ int server_connect(int sd) {
   printf("%d\n", sd);
   error_check(client_socket, "server accept");
 
-
   return client_socket;
 }
 
@@ -87,7 +86,7 @@ int client_setup(char * server) {
   int sd, i;
 
   //create the socket
-  sd = socket( AF_INET, SOCK_STREAM, 0 );
+  sd = socket( AF_INET, SOCK_STREAM | SO_REUSEADDR, 0 );
   error_check( sd, "client socket" );
 
   //run getaddrinfo
