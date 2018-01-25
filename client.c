@@ -3,7 +3,7 @@
 int main(int argc, char **argv) {
 
   int server_socket;
-  char buffer[BUFFER_SIZE];
+  char buffer[256];
 
   if (argc == 2)
     server_socket = client_setup( argv[1]);
