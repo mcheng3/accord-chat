@@ -3,9 +3,9 @@
 #include "control.h"
 
 void process(char *s);
-void subserver(int client_socket, int mess_sem, union messages mess, int to_handler);
+void subserver(int client_socket, int mess_sem, union messages *mess, int to_handler);
 void print_servers();
-void broadcast(union sub_fds *fds, union messages mess, int mess_sem);
+void broadcast(union sub_fds *fds, union messages *mess, int mess_sem);
 
 int sighandler(){
   return 0;
@@ -61,7 +61,7 @@ int main() {
 	union messages messa;
 	shmat(mess_shm, &messa, 0);
 	
-	broadcast(fds, messa, mess_sem);
+	broadcast(fds, &messa, mess_sem);
       }
     }
   
@@ -95,7 +95,7 @@ int main() {
 	if (f == 0){
 	  union messages mess;
 	  shmat(mess_shm, &mess, 0);
-	  subserver(client_socket, mess_sem, mess, to_handler);
+	  subserver(client_socket, mess_sem, &mess, to_handler);
 	}
 
 	//broadcast interaction
@@ -114,12 +114,12 @@ int main() {
   }
 }
 
-void broadcast(union sub_fds *fds, union messages mess, int mess_sem){
+void broadcast(union sub_fds *fds, union messages *mess, int mess_sem){
   int i;
   int j;
   char *buffer = (char *)calloc(256, sizeof(char));
   while(1){
-    while (mess.ready == 0){
+    while ((*mess).ready == 0){
       if (kill > 0){
 	printf("broadcast server: client list updated");
 	exit(0);
@@ -138,7 +138,7 @@ void broadcast(union sub_fds *fds, union messages mess, int mess_sem){
       }
     }
 
-    mess.ready = 0;
+    (*mess).ready = 0;
     up_sem(mess_sem);
     
     printf("broadcast server: message(s) broadcasted");
@@ -149,7 +149,7 @@ void print_servers(){
   printf("only one server rn\n");
 }
 
-void subserver(int client_socket, int mess_sem, union messages mess, int to_handler) {
+void subserver(int client_socket, int mess_sem, union messages *mess, int to_handler) {
   char buffer[BUFFER_SIZE];
 
   while (read(client_socket, buffer, sizeof(buffer))) {
@@ -158,9 +158,9 @@ void subserver(int client_socket, int mess_sem, union messages mess, int to_hand
     down_sem(mess_sem);
     write(to_handler, buffer, sizeof(buffer));
     printf("[clientserver %d] wrote to handler\n", getpid());
-    mess.ready++;
+    (*mess).ready++;
     up_sem(mess_sem);
-    printf("number of pending messages: %d\n", mess.ready);
+    printf("number of pending messages: %d\n", (*mess).ready);
     
     
   }//end read loop
