@@ -14,10 +14,6 @@ int sighandler(){
 int main() {
   int mess_sem = create_sem();
   int mess_shm = create_shm();
-  union messages mess;
-  shmat(mess_shm, &mess, 0);
-  mess.kill = 0;
-  mess.ready = 0;
 
 
   int f = fork();
@@ -28,6 +24,11 @@ int main() {
     int from_sub;
     int to_sub;
     int status;
+    
+    union messages mess;
+    shmat(mess_shm, &mess, 0);
+    mess.kill = 0;
+    mess.ready = 0;
     
     //connection handler
     while (1){
@@ -57,7 +58,10 @@ int main() {
 	
       //broadcast handler
       else{
-	broadcast(fds, mess, mess_sem);
+	union messages messa;
+	shmat(mess_shm, &messa, 0);
+	
+	broadcast(fds, messa, mess_sem);
       }
     }
   
@@ -89,6 +93,8 @@ int main() {
 
 	//client interaction
 	if (f == 0){
+	  union messages mess;
+	  shmat(mess_shm, &mess, 0);
 	  subserver(client_socket, mess_sem, mess, to_handler);
 	}
 
