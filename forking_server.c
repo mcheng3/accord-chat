@@ -89,7 +89,7 @@ int main() {
 	  while(1){
 	    char *buffer = (char *) calloc(256, sizeof(char));
 	    read(from_handler, buffer, 256);
-	    printf("%s", buffer);
+	    write(client_socket, buffer, 256);
 	  }
 	}
       }
