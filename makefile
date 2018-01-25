@@ -1,3 +1,5 @@
+.PHONY: chat_interface_test
+
 forking: client fserver
 
 select: sclient sserver
@@ -29,12 +31,15 @@ forking_server.o: forking_server.c networking.h
 networking.o: networking.c networking.h
 	gcc -c networking.c
 
-chat_interface.o: chat_interface.c chat_interface.h
-	gcc -c chat_interface.c
+chat_interface.o: chat_interface.c chat_interface.h dqueue.o
+	gcc -c chat_interface.c -lncurses
 
-chat_interface_test: chat_interface.c chat_interface_test.c chat_interface.h
-	gcc -o chat_interface_test chat_interface.c
+chat_interface_test: chat_interface.c chat_interface.h dqueue.o
+	gcc -o chat_interface_test chat_interface.c dqueue.o -lncurses
 	./chat_interface_test
+
+dqueue.o: dqueue.c dqueue.h
+	gcc -c dqueue.c
 
 clean:
 	rm *.o
