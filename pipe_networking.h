@@ -7,12 +7,12 @@
 #include <string.h>
 #include <errno.h>
 
-#ifndef NETWORKING_H
-#define NETWORKING_H
+#ifndef PIPE_NETWORKING_H
+#define PIPE_NETWORKING_H
 
 #define ACK "HOLA"
 #define HANDSHAKE_BUFFER_SIZE 10
-#define BUFFER_SIZE 1000
+#define BUFFER_SIZE 256
 
 int pserver_handshake(int *to_client);
 int pclient_handshake(int *to_server);
