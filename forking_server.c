@@ -114,8 +114,10 @@ void broadcast(union sub_fds *fds, union messages mess, int mess_sem){
   char *buffer = (char *)calloc(256, sizeof(char));
   while(1){
     while (mess.ready == 0){
-      if (kill > 0)
+      if (kill > 0){
+	printf("broadcast server: client list updated");
 	exit(0);
+      }
     }
 
     printf("broadcast server: messages > 0");
@@ -152,6 +154,8 @@ void subserver(int client_socket, int mess_sem, union messages mess, int to_hand
     printf("[clientserver %d] wrote to handler\n", getpid());
     mess.ready++;
     up_sem(mess_sem);
+    printf("number of pending messages: %d\n", mess.ready);
+    
     
   }//end read loop
   close(client_socket);
