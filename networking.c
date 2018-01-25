@@ -20,11 +20,12 @@ int server_setup() {
   int sd, i;
 
   //create the socket
-  sd = socket( AF_INET, SOCK_STREAM, 0 );
+  sd = socket( AF_INET, SOCK_STREAM , 0 );
   error_check( sd, "server socket" );
   printf("[server] socket created\n");
 
   //setup structs for getaddrinfo
+  setsockopt(sd, 0, SO_REUSEPORT, NULL, NULL);
   struct addrinfo * hints, * results;
   hints = (struct addrinfo *)calloc(1, sizeof(struct addrinfo));
   hints->ai_family = AF_INET;  //IPv4 address

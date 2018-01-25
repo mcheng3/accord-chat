@@ -80,7 +80,7 @@ int main() {
       fgets(buffer, 1, stdin);
       remove_sem(mess_sem);
       remove_shm(mess_shm);
-      close(client_socket);
+      //close(client_socket);
       exit(0);
     }
 
