@@ -25,7 +25,7 @@ int server_setup() {
   printf("[server] socket created\n");
 
   //setup structs for getaddrinfo
-  setsockopt(sd, 0, SO_REUSEPORT, NULL, NULL);
+  setsockopt(sd, 0, SO_REUSEADDR, NULL, NULL);
   struct addrinfo * hints, * results;
   hints = (struct addrinfo *)calloc(1, sizeof(struct addrinfo));
   hints->ai_family = AF_INET;  //IPv4 address
