@@ -40,6 +40,7 @@ int hangman(char *phrase){
 		mvprintw(max_y/2-2, max_x/5-6+i, "=");
 	}
 	mvprintw(max_y/2-9, max_x/5, "|");
+
 	char *length = malloc(sizeof(int));
 	sprintf(length, "%d", strlen(phrase));
 	char *blanks=malloc(strlen(phrase)); 
@@ -50,6 +51,10 @@ int hangman(char *phrase){
         // mvprintw(max_y/2, max_x/5+15, phrase);
 	int solved = 0;
 	while(moves_wrong<7 && !solved) {
+	int man_y[] = {max_y/2-8,max_y/2-7,max_y/2-7,max_y/2-7,max_y/2-6,max_y/2-5,max_y/2-5};
+	int man_x[] = {max_x/5, max_x/5, max_x/5-1, max_x/5+1, max_x/5,max_x/5-1,max_x/5+1};
+      	char *man_parts[] = {"O", "|", "\\", "/", "|", "/", "\\"};
+	while(1) {
 		
 		char ch;
 		ch = getch();	
@@ -74,6 +79,9 @@ int hangman(char *phrase){
 		int man_y[] = {max_y/2-8,max_y/2-7,max_y/2-7,max_y/2-7,max_y/2-6,max_y/2-5,max_y/2-5};
 		int man_x[] = {max_x/5, max_x/5, max_x/5-1, max_x/5+1, max_x/5,max_x/5-1,max_x/5+1};
 		char *man_parts[] = {"O", "|", "\\", "/", "|", "/", "\\"};
+
+		}	
+		
 		for(i=0;i<moves_wrong;i++){
 			mvprintw(man_y[i],man_x[i],man_parts[i]);
 		}

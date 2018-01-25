@@ -5,6 +5,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<ctype.h>
 #include"dqueue.h"
 
 typedef struct input_dqueue dqueue;/*
@@ -20,6 +21,7 @@ WINDOW * input_win;
 WINDOW * output_win;//the output window is the only one with a border
 WINDOW * status_bar;
 WINDOW * message_win;
+int ready_to_send = 0;//if this is true then you can call pop_input_buffer()
 
 void init();/*
 sets up ncurses and creates windows for the chat
@@ -55,6 +57,16 @@ draws border
 
 void display_message(char * header,char * username, char *body);/*
 displays stuff, yeah
+*/
+
+char * pop_input_buffer();/*
+returns the input_buffer and creates a new one for the next input
+returns NULL if ready_to_send is false
+remember to free the string obtained by this function
+*/
+
+void tick();/*
+does everything
 */
 
 #endif
