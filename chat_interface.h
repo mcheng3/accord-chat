@@ -22,7 +22,7 @@ input_dqueue
 struct pollfd poll_structs[1];
 
 int display_pipe_fd;
-int buffer_size = 280;/*also body size, actual buffer size is buffer_size + 1
+int buffer_size = 256;/*also body size, actual buffer size is buffer_size + 1
 this is due to the null byte
 */
 int status_bar_width = 12;
