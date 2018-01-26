@@ -64,7 +64,7 @@ void create_status_bar(int maxy, int maxx){
 	wborder(status_bar,' ',0,0,0,0,0,0,0);	
 }
 
-void display_message(char * header,char * username,char * body){
+void display_message(char * username,char * body){
 	if(strcmp(last_user,username)){
 		int i,maxx;
 		maxx = getmaxx(message_win);
@@ -73,16 +73,16 @@ void display_message(char * header,char * username,char * body){
 			waddch(message_win,'~');
 		}
 		waddch(message_win,'\n');
-		wprintw(message_win,"%s\n-%s-\n%s\n",header,username,body);
+		wprintw(message_win,"%s-\n%s\n",username,body);
 	}
 	else{
 		wprintw(message_win,"%s\n",body);
 	}
 	strcpy(last_user,username);
 	wrefresh(message_win);
-	push_input_dqueue(header,message_header_history);
-	push_input_dqueue(username,message_username_history);
-	push_input_dqueue(body,message_body_history);
+//	push_input_dqueue(header,message_header_history);
+//	push_input_dqueue(username,message_username_history);
+//	push_input_dqueue(body,message_body_history);
 }
 
 char * pop_input_buffer(){
@@ -224,7 +224,7 @@ int update_display_through_pipe(){
 			read(display_pipe_fd,header,header_size);
 			read(display_pipe_fd,username,username_size);
 			read(display_pipe_fd,body,buffer_size + 1);
-			display_message(header,username,body);
+			display_message(username,body);
 		}
 	}
 	return retpoll;

@@ -69,7 +69,7 @@ takes care of setting up window config
 draws border
 */
 
-void display_message(char * header,char * username, char *body);/*
+void display_message(char * username, char *body);/*
 displays stuff, yeah
 */
 
