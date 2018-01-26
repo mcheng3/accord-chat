@@ -54,7 +54,7 @@ void create_message_window(int maxy, int maxx){
 	int height = maxy - lines_for_input_window(maxx) - 2;
 	message_win = newwin(height, maxx - status_bar_width - 2,1,1);
 	scrollok(message_win,TRUE);
-	wprintw(message_win,"messages\n");
+	wprintw(message_win,"messages\ntry using arrow keys and backspace :)");
 }
 
 void create_status_bar(int maxy, int maxx){
