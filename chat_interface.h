@@ -22,7 +22,7 @@ input_dqueue
 struct pollfd poll_structs[1];
 
 int display_pipe_fd;
-int buffer_size = 280;/*also body size, actual buffer size is buffer_size + 1
+int buffer_size = 255;/*also body size, actual buffer size is buffer_size + 1
 this is due to the null byte
 */
 int status_bar_width = 12;
@@ -69,7 +69,7 @@ takes care of setting up window config
 draws border
 */
 
-void display_message(char * header,char * username, char *body);/*
+void display_message(char * username, char *body);/*
 displays stuff, yeah
 */
 

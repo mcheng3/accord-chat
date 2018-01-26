@@ -13,8 +13,8 @@ fserver: forking_server.o networking.o control.o pipe_networking.o
 sclient: select_client.o networking.o
 	gcc -o client select_client.o networking.o
 
-client: client.o networking.o
-	gcc -o client client.o networking.o -lncurses
+client: networking.o chat_interface.c chat_interface.h dqueue.o
+	gcc -o client networking.o chat_interface.c dqueue.o -lncurses
 
 select_client.o: select_client.c networking.h
 	gcc -c select_client.c
@@ -48,3 +48,4 @@ pipe_networking.o: pipe_networking.c pipe_networking.h
 clean:
 	rm *.o
 	rm *~
+	killall server

@@ -1,4 +1,5 @@
 #include "chat_interface.h"
+#include "networking.h"
 
 char * input_buffer;
 int input_buffer_used_length;
@@ -64,7 +65,7 @@ void create_status_bar(int maxy, int maxx){
 	wborder(status_bar,' ',0,0,0,0,0,0,0);	
 }
 
-void display_message(char * header,char * username,char * body){
+void display_message(char * username,char * body){
 	if(strcmp(last_user,username)){
 		int i,maxx;
 		maxx = getmaxx(message_win);
@@ -73,16 +74,16 @@ void display_message(char * header,char * username,char * body){
 			waddch(message_win,'~');
 		}
 		waddch(message_win,'\n');
-		wprintw(message_win,"%s\n-%s-\n%s\n",header,username,body);
+		wprintw(message_win,"%s-\n%s\n",username,body);
 	}
 	else{
 		wprintw(message_win,"%s\n",body);
 	}
 	strcpy(last_user,username);
 	wrefresh(message_win);
-	push_input_dqueue(header,message_header_history);
-	push_input_dqueue(username,message_username_history);
-	push_input_dqueue(body,message_body_history);
+//	push_input_dqueue(header,message_header_history);
+//	push_input_dqueue(username,message_username_history);
+//	push_input_dqueue(body,message_body_history);
 }
 
 char * pop_input_buffer(){
@@ -224,7 +225,7 @@ int update_display_through_pipe(){
 			read(display_pipe_fd,header,header_size);
 			read(display_pipe_fd,username,username_size);
 			read(display_pipe_fd,body,buffer_size + 1);
-			display_message(header,username,body);
+			display_message(username,body);
 		}
 	}
 	return retpoll;
@@ -238,16 +239,30 @@ void refresh_all(){
 	wrefresh(status_bar);
 }
 
-int main(){
-	init();
-	refresh();
-	wrefresh(input_win);
-	wrefresh(output_win);
-	wrefresh(message_win);
-	wrefresh(status_bar);
+int main(int argc, char **argv) {
+
+	int server_socket;
+	char write_buffer[256];
+	char read_buffer[256];
+
+	if (argc == 2)
+		server_socket = client_setup( argv[1]);
+	else
+		server_socket = client_setup( CS16 );
+
+
+	set_display_pipe(server_socket);
 	while(1){
-		tick();
+		int retpoll = poll(poll_structs,1,0);
+		if(retpoll > 0){
+			if(poll_structs[0].revents & POLLIN){
+				read(server_socket, read_buffer, sizeof(read_buffer));
+				printf("%s", read_buffer);
+			}
+		}
+		printf(":");
+		fgets(write_buffer, sizeof(write_buffer), stdin);
+		//*strchr(write_buffer, '\n') = 0;
+		write(server_socket, write_buffer, sizeof(write_buffer));
 	}
-	endwin();
-	return 0;
 }
