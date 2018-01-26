@@ -20,20 +20,20 @@ void init(){
 	create_output_window(max_y, max_x);
 	create_message_window(max_y, max_x);
 	create_status_bar(max_y, max_x);
-	last_user = (char *)calloc(buffer_size,sizeof(char));
+	last_user = (char *)calloc(buffer_size + 1,sizeof(char));
 }
 
 int lines_for_input_window(int maxx){
 	int i;
 	int lines_needed = 0;
-	for(i = buffer_size; i >= 0; i -= maxx ){
+	for(i = buffer_size + 1; i >= 0; i -= maxx ){
 		lines_needed++;
 	}
 	return lines_needed;
 }
 
 void create_input_window(int maxy, int maxx){
-	input_buffer = (char *)calloc(buffer_size,sizeof(char));
+	input_buffer = (char *)calloc(buffer_size + 1,sizeof(char));
 	input_buffer_used_length = 0;
 	int height = lines_for_input_window(maxx);
 	input_win = newwin(height, maxx, maxy - height,0);
@@ -88,7 +88,10 @@ void display_message(char * header,char * username,char * body){
 char * pop_input_buffer(){
 	if(ready_to_send){
 		char * send = input_buffer;
-		input_buffer = (char *)calloc(buffer_size,sizeof(char));
+		input_buffer = (char *)calloc(buffer_size + 1,sizeof(char));
+		ready_to_send = 0;
+		input_buffer_used_length = 0;
+		input_buffer_cursor_pos = 0;
 		return send;
 	}
 	else{
@@ -97,19 +100,40 @@ char * pop_input_buffer(){
 }
 
 static void calculate_cursor_pos(int * cury,int * curx){
-
+	int maxx = getmaxx(input_win);
+	*cury = (input_buffer_cursor_pos - (input_buffer_cursor_pos % maxx)) / maxx;
+	*curx = input_buffer_cursor_pos % maxx;
 }
 
 static void input_insert(char c, int pos){
-
+	char temp;
+	for(;pos < buffer_size; pos++){
+		temp = input_buffer[pos];
+		input_buffer[pos] = c;
+		c = temp;
+	}
 }
 
 static void input_delete(int pos){
-
+	int i;
+	char temp;
+	char c = '\0';
+	for(i = buffer_size - 1; i >= pos; i--){
+		temp = input_buffer[i];
+		input_buffer[i] = c;
+		c = temp;
+	}
 }
 
 void tick(){
+	static unsigned int sleepframes = 0;
 	if(ready_to_send){
+		usleep(500000);
+		if(sleepframes++ >= 2){
+			waddch(input_win,'.');
+			sleepframes = 0;
+			wrefresh(input_win);
+		}
 		return;
 	}
 	else{
@@ -141,6 +165,7 @@ void tick(){
 					input_buffer_cursor_pos--;
 				}
 				input_delete(input_buffer_cursor_pos);
+				input_buffer_used_length--;
 				break;
 
 			case KEY_DC :
@@ -148,6 +173,7 @@ void tick(){
 					input_buffer_cursor_pos--;
 				}
 				input_delete(input_buffer_cursor_pos);
+				input_buffer_used_length--;
 				break;
 
 			case 127 :
@@ -157,6 +183,13 @@ void tick(){
 				input_delete(input_buffer_cursor_pos);
 				break;
 
+			case '\n' :
+				ready_to_send = 1;
+				werase(input_win);
+				mvwprintw(input_win,0,0,"sending...");
+				wrefresh(input_win);
+				return;
+
 			default :
 				if(isprint(c) && input_buffer_used_length < buffer_size){
 					input_insert(c,input_buffer_cursor_pos);
@@ -164,8 +197,11 @@ void tick(){
 					input_buffer_used_length++;
 				}
 		}
-		clearok(input_win,TRUE);
-		mvwprint(input_win,0,0,input_buffer);
+		werase(input_win);
+		mvwprintw(input_win,0,0,input_buffer);
+		int cury2,curx2;
+		calculate_cursor_pos(&cury2,&curx2);
+		wmove(input_win,cury2,curx2);
 		wrefresh(input_win);
 		return;
 	}
@@ -178,7 +214,9 @@ int main(){
 	wrefresh(output_win);
 	wrefresh(message_win);
 	wrefresh(status_bar);
-	getch();
+	while(1){
+		tick();
+	}
 	endwin();
 	return 0;
 }
