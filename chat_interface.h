@@ -7,6 +7,8 @@
 #include<string.h>
 #include<ctype.h>
 #include<time.h>
+#include<poll.h>
+#include<unistd.h>
 #include"dqueue.h"
 
 typedef struct input_dqueue dqueue;/*
@@ -14,14 +16,22 @@ we are not going to use this to store input even though the name is
 input_dqueue
 */
 
-int buffer_size = 280;
+struct pollfd poll_structs[1];
+
+int display_pipe_fd;
+int buffer_size = 280;/*also body size, actual buffer size is buffer_size + 1
+this is due to the null byte
+*/
 int status_bar_width = 12;
 int history_size = 30; //how many messages back do you want to store
+int header_size = 20;
+int username_size = 20;
 
 WINDOW * input_win;
 WINDOW * output_win;//the output window is the only one with a border
 WINDOW * status_bar;
 WINDOW * message_win;
+
 int ready_to_send = 0;//if this is true then you can call pop_input_buffer()
 
 void init();/*
@@ -66,8 +76,19 @@ returns NULL if ready_to_send is false
 remember to free the string obtained by this function
 */
 
+void set_display_pipe(int pipefd);/*
+prepares the struct for poll
+*/
+
 void tick();/*
 does everything
+except update the display
+*/
+
+int update_display_through_pipe();/*
+exactly what it says
+returns return value of poll
+which is 0 if timed out and something bigger than 0 if not
 */
 
 #endif

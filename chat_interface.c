@@ -125,6 +125,13 @@ static void input_delete(int pos){
 	}
 }
 
+void set_display_pipe(int pipefd){
+	memset(poll_structs,0,sizeof(poll_structs));
+	poll_structs[0].fd = pipefd;
+	poll_structs[0].events = POLLIN;
+	poll_structs[0].revents = 0;
+}
+
 void tick(){
 	static unsigned int sleepframes = 0;
 	if(ready_to_send){
@@ -205,6 +212,22 @@ void tick(){
 		wrefresh(input_win);
 		return;
 	}
+}
+
+int update_display_through_pipe(){
+	int retpoll = poll(poll_structs,1,100);
+	if(retpoll > 0){
+		if(poll_structs[0].revents & POLLIN){
+			char * header = (char *)malloc(header_size * sizeof(char));
+			char * username = (char *)malloc(username_size * sizeof(char));
+			char * body = (char *)malloc((buffer_size + 1) * sizeof(char));
+			read(display_pipe_fd,header,header_size);
+			read(display_pipe_fd,username,username_size);
+			read(display_pipe_fd,body,buffer_size + 1);
+			display_message(header,username,body);
+		}
+	}
+	return retpoll;
 }
 
 int main(){
