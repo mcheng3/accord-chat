@@ -13,8 +13,8 @@ fserver: forking_server.o networking.o control.o pipe_networking.o
 sclient: select_client.o networking.o
 	gcc -o client select_client.o networking.o
 
-client: client.o networking.o
-	gcc -o client client.o networking.o
+client: client.o networking.o chat_interface.o
+	gcc -o client client.o networking.o chat_interface.o -lncurses
 
 select_client.o: select_client.c networking.h
 	gcc -c select_client.c
