@@ -8,23 +8,24 @@
 
 #define DELAY 30000
 
-void strreplace(char s[], char s1[],  char chr, char repl_chr)
+void strreplace(char s[], char s1[],  char chr)
 {
     int i=0;
     while(s[i]!='\0')
     {
         if(s[i]==chr)
         {
-            s1[i]=repl_chr;
+            s1[2*i]=chr;
         }  
         i++; 
     }
-     //printf("%s",s);
+    //mvprintw(0, 0, "%s",s1);
 }
 
 int hangman(char *phrase){
+    clear();
     nodelay(stdscr, FALSE);
-    char *f = malloc(sizeof(phrase));
+    char *f = malloc(sizeof(phrase) * 2);
     int i;
     strcpy(f, phrase);
     int x = 0, y = 0;
@@ -42,10 +43,12 @@ int hangman(char *phrase){
     }
     mvprintw(max_y/2-9, max_x/5, "|");
     
-    char *blanks= (char *)malloc(strlen(phrase)); 
+    char *blanks= (char *)malloc(sizeof(phrase) * 3); 
     for(i=0; i<strlen(phrase); i++){
-        strcat(blanks, "_");
+        strcat(blanks, "_ ");
     }
+
+    strreplace(phrase, blanks, ' ');
     
     //printf("%s\n", blanks);
     //mvprintw(max_y/2, max_x/5+4, blanks);
@@ -56,6 +59,7 @@ int hangman(char *phrase){
     char *man_parts[] = {"O", "|", "\\", "/", "|", "/", "\\"};
 
     while(moves_wrong<7 && !solved) {
+
         mvprintw(max_y/2, max_x/5+15, blanks);
 
         char ch;
@@ -65,33 +69,34 @@ int hangman(char *phrase){
         if (strcmp(strnew, str) != 0){
             str = strnew;
         }*/
+        if(ch <= 'z' && ch >= 'a'){
+            strreplace(f, blanks, ch);
+            if(ch != ' ' && moves_wrong < 7 && !strchr(phrase, ch)){
+                moves_wrong++;
+            }
+            if(!strchr(blanks, '_')){
+                mvprintw(max_y/2+5, max_x/5+10, "You are a winner!");
+                mvprintw(max_y/2, max_x/5+15, blanks);
+                refresh();
+                sleep(3);
+                solved = 1;
+                return 0;
+            }
 
-        strreplace(f, blanks, ch, ch);
-        if(ch != ' ' && moves_wrong < 7 && !strchr(phrase, ch)){
-            moves_wrong++;
-        }
-        if(!strchr(blanks, '_')){
-            mvprintw(max_y/2+5, max_x/5+10, "You are a winner!");
+            for(i=0;i<moves_wrong;i++){
+                mvprintw(man_y[i],man_x[i],man_parts[i]);
+            }
             mvprintw(max_y/2, max_x/5+15, blanks);
+
             refresh();
-            sleep(2);
-            solved = 1;
 
+            usleep(DELAY);
         }
-
-        for(i=0;i<moves_wrong;i++){
-            mvprintw(man_y[i],man_x[i],man_parts[i]);
-        }
-        mvprintw(max_y/2, max_x/5+15, blanks);
-
-        refresh();
-
-        usleep(DELAY);
     }
-    if(moves_wrong ==7){
+    if(moves_wrong == 7){
         mvprintw(max_y/2+5, max_x/5+10, "You are a loser!");
         refresh();
-        sleep(2);
+        sleep(3);
         return 0;
     }
     
@@ -101,6 +106,7 @@ int hangman(char *phrase){
 }
 
 int react(){
+    clear();
     int x = 0, y = 0;
     int max_y = 0, max_x = 0;
     getmaxyx(stdscr, max_y, max_x);
@@ -138,9 +144,7 @@ int react(){
     gettimeofday(&end, NULL);
     erase();
     refresh();
-    mvprintw(max_y/2, max_x/2-10, "You took %ld milliseconds\n", (((end.tv_sec - start.tv_sec)*1000000L
-        +end.tv_usec) - start.tv_usec)/1000);
-
+    mvprintw(max_y/2, max_x/2-10, "You took %ld milliseconds\n", (((end.tv_sec - start.tv_sec)*1000000L +end.tv_usec) - start.tv_usec)/1000);
     refresh();
     sleep(6);
     return 0;
@@ -158,7 +162,11 @@ int main(int argc, char *argv[]) {
 
     char ch;
     char *str = malloc(sizeof(char));
-    hangman("unpredictably");
-    //react();
+    hangman("cool");
+    hangman("hello world");
+    hangman("potatoes");
+    hangman("keyboard qwerty");
+    //hangman("");
+    react();
     endwin();
 }
