@@ -4,12 +4,12 @@
 
 ## How to Setup
 You should run `$ make` and do one of the following:
-* `$ ./accord-server` if you want to host an accord server.
-* `$ ./accord-client <ip>` if you wish to connect to an accord server.
+* `$ ./server` if you want to host an accord server.
+* `$ ./client <ip>` if you wish to connect to an accord server.
 
 ## Games
 You can play two games in Accord which are accessed with their own in-chat command.
-* Hangman: `!hangman <phrase>`
+* Hangman: `!hangman`
 * Reactor: `!react`
 
 ## Known Issues
