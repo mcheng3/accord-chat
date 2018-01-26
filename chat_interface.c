@@ -429,6 +429,16 @@ int main(int argc, char **argv) {
 		if(retpoll > 0){
 			if(poll_structs[0].revents & POLLIN){
 				read(server_socket, read_buffer, sizeof(read_buffer));
+				if(hang){
+					//parse read_buffer here
+					int hasBrackets = 0;
+					char word[50];
+					if(hasBrackets){
+						hangman(word);
+						hang = 0;
+						after_game_clean_up();
+					}
+				}
 				display_message("some_username",read_buffer);
 			}
 		}
@@ -436,11 +446,6 @@ int main(int argc, char **argv) {
 		//*strchr(write_buffer, '\n') = 0;
 		if(ready_to_send){
 			char * s = pop_input_buffer();
-			if(hang){
-				hang = 0;
-				hangman(s);
-				after_game_clean_up();
-			}
 			write(server_socket, s, sizeof(write_buffer));
 			if(strcmp(s,"!react") == 0){
 				react();
@@ -448,7 +453,8 @@ int main(int argc, char **argv) {
 			}
 			else if(strcmp(s,"!hangman") == 0){
 				hang = 1;
-				display_message("hangedman","your next message will be the word");
+				display_message("hangedman","waiting for word");
+				write(server_socket,"playing hangman, waiting for word, put word in brackets plz []",sizeof(write_buffer));
 			}
 			free(s);
 		}
