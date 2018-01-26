@@ -178,7 +178,7 @@ void broadcast(struct sub_fds *fds, int mess_shm, int mess_sem, int free_spot){
   
     for(i = 0; i < free_spot; i++){
       if (read(fds[i].from_sub, buffer, 256) > -1){
-	printf("[broadcast server]: broadcasting %s", buffer);
+	printf("[broadcast server]: broadcasting %s\n", buffer);
 	for(j = 0; j < free_spot; j++){
 	  
 	  write(fds[j].to_sub, buffer, 256);
@@ -204,8 +204,9 @@ void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler) {
   mess = (struct messages *)shmat(mess_shm, NULL, 0);
   printf("[subserver]: mess attached\n");
   char *username = (char *)calloc(20, sizeof(char));
+  //  char *buffy = (char *)calloc(256, sizeof(char));
   
-  strcpy(buffer, "Enter a username: \n");
+  strcpy(buffer, "Enter a username: ");
   printf("[subserver]: asking for username...\n");
   write(client_socket, buffer, sizeof(buffer));
   read(client_socket, username, 17);
@@ -215,12 +216,20 @@ void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler) {
   strcat(username, ": ");
   int username_len = strlen(username);
 
-  while (read(client_socket, buffer, sizeof(buffer) - strlen(username))) {
+  while (read(client_socket, buffer, sizeof(buffer))) {
 
+    buffer[strlen(buffer)]  = '\0';
+    printf("username: %s\n", username);
+    printf("buffer: %s\n", buffer);
+    //printf("buffy: %s\n", buffy);
     printf("[clientserver %d] received: [%s]\n", getpid(), buffer);
-    strcat(username, buffer);
+    strncpy(username + username_len, buffer, 256);
+    //username[username_len + strlen(buffer)] = 0;
+    printf("message: %s\n", username);
+    //buffy[sizeof(buffer)] = 0;
+    //strcat(username, buffy + 1);
     down_sem(mess_sem);
-    write(to_handler, username, strlen(username));
+    write(to_handler, username, strlen(username) + 1);
     printf("[clientserver %d] wrote to handler\n", getpid());
     mess->ready += 1;
     up_sem(mess_sem);
@@ -231,6 +240,7 @@ void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler) {
     
   }//end read loop
   free(username);
+  //free(buffy);
   close(client_socket);
   exit(0);
 }
