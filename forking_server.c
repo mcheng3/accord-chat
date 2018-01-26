@@ -2,6 +2,7 @@
 #include "networking.h"
 #include "control.h"
 
+
 void process(char *s);
 void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler);
 void print_servers();
@@ -103,7 +104,7 @@ int main() {
     }
 
     else{
-    
+      
       //main server
       int listen_socket;
       listen_socket = server_setup();
@@ -201,6 +202,7 @@ void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler) {
   printf("[subserver]: attaching mess...\n");
   struct messages *mess;
   mess = (struct messages *)shmat(mess_shm, NULL, 0);
+<<<<<<< HEAD
   printf("[subserver]: mess attached\n");
   char *username = (char *)calloc(20, sizeof(char));
   
