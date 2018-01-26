@@ -8,13 +8,13 @@ sserver: select_server.o networking.o
 	gcc -o server select_server.o networking.o
 
 fserver: forking_server.o networking.o control.o pipe_networking.o
-	gcc -o server forking_server.o networking.o control.o pipe_networking.o
+	gcc -o server forking_server.o networking.o control.o pipe_networking.o -lncurses
 
 sclient: select_client.o networking.o
 	gcc -o client select_client.o networking.o
 
 client: client.o networking.o
-	gcc -o client client.o networking.o
+	gcc -o client client.o networking.o -lncurses
 
 select_client.o: select_client.c networking.h
 	gcc -c select_client.c
