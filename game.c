@@ -23,6 +23,7 @@ void strreplace(char s[], char s1[],  char chr)
 }
 
 int hangman(char *phrase){
+    clear();
     nodelay(stdscr, FALSE);
     char *f = malloc(sizeof(phrase) * 2);
     int i;
@@ -42,7 +43,7 @@ int hangman(char *phrase){
     }
     mvprintw(max_y/2-9, max_x/5, "|");
     
-    char *blanks= (char *)malloc(strlen(phrase) * 3); 
+    char *blanks= (char *)malloc(sizeof(phrase) * 3); 
     for(i=0; i<strlen(phrase); i++){
         strcat(blanks, "_ ");
     }
@@ -68,28 +69,29 @@ int hangman(char *phrase){
         if (strcmp(strnew, str) != 0){
             str = strnew;
         }*/
+        if(ch <= 'z' && ch >= 'a'){
+            strreplace(f, blanks, ch);
+            if(ch != ' ' && moves_wrong < 7 && !strchr(phrase, ch)){
+                moves_wrong++;
+            }
+            if(!strchr(blanks, '_')){
+                mvprintw(max_y/2+5, max_x/5+10, "You are a winner!");
+                mvprintw(max_y/2, max_x/5+15, blanks);
+                refresh();
+                sleep(3);
+                solved = 1;
+                return 0;
+            }
 
-        strreplace(f, blanks, ch);
-        if(ch != ' ' && moves_wrong < 7 && !strchr(phrase, ch)){
-            moves_wrong++;
-        }
-        if(!strchr(blanks, '_')){
-            mvprintw(max_y/2+5, max_x/5+10, "You are a winner!");
+            for(i=0;i<moves_wrong;i++){
+                mvprintw(man_y[i],man_x[i],man_parts[i]);
+            }
             mvprintw(max_y/2, max_x/5+15, blanks);
+
             refresh();
-            sleep(3);
-            solved = 1;
-            return 0;
+
+            usleep(DELAY);
         }
-
-        for(i=0;i<moves_wrong;i++){
-            mvprintw(man_y[i],man_x[i],man_parts[i]);
-        }
-        mvprintw(max_y/2, max_x/5+15, blanks);
-
-        refresh();
-
-        usleep(DELAY);
     }
     if(moves_wrong == 7){
         mvprintw(max_y/2+5, max_x/5+10, "You are a loser!");
@@ -142,9 +144,7 @@ int react(){
     gettimeofday(&end, NULL);
     erase();
     refresh();
-    mvprintw(max_y/2, max_x/2-10, "You took %ld milliseconds\n", (((end.tv_sec - start.tv_sec)*1000000L
-        +end.tv_usec) - start.tv_usec)/1000);
-
+    mvprintw(max_y/2, max_x/2-10, "You took %ld milliseconds\n", (((end.tv_sec - start.tv_sec)*1000000L +end.tv_usec) - start.tv_usec)/1000);
     refresh();
     sleep(6);
     return 0;
@@ -163,6 +163,9 @@ int main(int argc, char *argv[]) {
     char ch;
     char *str = malloc(sizeof(char));
     hangman("cool");
+    hangman("hello world");
+    hangman("potatoes");
+    hangman("keyboard qwerty");
     //hangman("");
     react();
     endwin();
