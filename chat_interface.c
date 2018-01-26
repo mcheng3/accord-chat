@@ -215,7 +215,7 @@ void tick(){
 }
 
 int update_display_through_pipe(){
-	int retpoll = poll(poll_structs,1,100);
+	int retpoll = poll(poll_structs,1,0);
 	if(retpoll > 0){
 		if(poll_structs[0].revents & POLLIN){
 			char * header = (char *)malloc(header_size * sizeof(char));

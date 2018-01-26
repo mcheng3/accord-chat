@@ -9,6 +9,9 @@
 #include<time.h>
 #include<poll.h>
 #include<unistd.h>
+#include<fcntl.h>
+#include<sys/stat.h>
+#include<sys/types.h>
 #include"dqueue.h"
 
 typedef struct input_dqueue dqueue;/*
