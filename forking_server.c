@@ -5,9 +5,10 @@
 void process(char *s);
 void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler);
 void print_servers();
-void broadcast(union sub_fds *fds, int mess_shm, int mess_sem);
+void broadcast(struct sub_fds *fds, int mess_shm, int mess_sem, int free_spot);
 
 int sighandler(){
+  printf("Use exit\n");
   return 0;
 }
 
@@ -20,15 +21,17 @@ int main() {
   int f = fork();
 
   if (f == 0){
-    union sub_fds *fds = (union sub_fds*)calloc(10, sizeof(union sub_fds));
+    struct sub_fds *fds = (struct sub_fds*)calloc(10, sizeof(struct sub_fds));
     int free_spot = 0;
     int from_sub;
     int to_sub;
     int status;
-    
-    union messages *mess;
-    mess = (union messages *)shmat(mess_shm, NULL, 0);
-    printf("%s\n", strerror(errno));
+   
+    printf("%d\n", mess_shm); 
+    struct messages *mess;
+    mess = (struct messages *)shmat(mess_shm, NULL, 0);
+    if (mess == (struct messages *) -1)
+      printf("%s\n", strerror(errno));
     mess->kill = 0;
     mess->ready = 0;
     
@@ -47,26 +50,30 @@ int main() {
       fds[free_spot].to_sub = to_sub;
       free_spot++;
       
+      printf("mess.ready: %d\n", mess->ready);
       printf("[connection handler]: creating broadcast server...\n");
 
-      f = fork();
-
-      if (f != 0){
+      printf("mess.ready: %d\n", mess->ready);
 	printf("[connection handler]: adding client...\n");
 	down_sem(mess_sem);
 	mess->kill = 1;
 	up_sem(mess_sem);
+        printf("mess.ready: %d\n", mess->ready);
 	wait(&status);
 	printf("[connection handler]: client added\n");
 
 	down_sem(mess_sem);
 	mess->kill = 0;
 	up_sem(mess_sem);
+      f = fork();
+
+      if (f != 0){
       }
 	
       //broadcast handler
       else{
-	broadcast(fds, mess_shm, mess_sem);
+        printf("mess.ready: %d\n", mess->ready);
+	broadcast(fds, mess_shm, mess_sem, free_spot);
       }
     }
   
@@ -75,11 +82,22 @@ int main() {
   else{
     f = fork();
 
-    char *buffer = (char *)calloc(1, sizeof(char));
+    //serverside interface
     if (f != 0){
-      fgets(buffer, 1, stdin);
+      char *buffer = (char *)calloc(6, sizeof(char));
+      
+      while(strcmp(buffer, "exit\n")){
+	fgets(buffer, 6, stdin);
+      }
+      struct messages *mess;  
+      mess = (struct messages *)shmat(mess_shm, NULL, 0);
+      mess->ready = 0;
+      mess->kill = 1;
+      sleep(1);
+      mess->kill = 0;
       remove_sem(mess_sem);
       remove_shm(mess_shm);
+      remove("luigi");
       //close(client_socket);
       exit(0);
     }
@@ -97,7 +115,9 @@ int main() {
       while (1) {
 
 	int client_socket = server_connect(listen_socket);
-      
+        
+	sleep(1);
+ 
 	f = fork();
     
 	//client server
@@ -110,6 +130,7 @@ int main() {
 	  //client interaction
 	  if (f == 0){
 	    subserver(client_socket, mess_sem, mess_shm,to_handler);
+	    close(client_socket);
 	  }
 
 	  //broadcast interaction
@@ -129,34 +150,35 @@ int main() {
   }
 }
 
-void broadcast(union sub_fds *fds, int mess_shm, int mess_sem){
+void broadcast(struct sub_fds *fds, int mess_shm, int mess_sem, int free_spot){
   int i;
   int j;
   char *buffer = (char *)calloc(256, sizeof(char));
 
   printf("broadcast server created\n");
   
-  union messages *mess;
-  mess = (union messages *)shmat(mess_shm, NULL, 0);
+  struct messages *mess;
+  mess = (struct messages *)shmat(mess_shm, NULL, 0);
   
   printf("mess.ready: %d\n", mess->ready);
   
   while(1){
     while (mess->ready == 0){
-      printf("mess.kill: %d\n", mess->kill);
+      //printf("mess.kill: %d\n", mess->kill);
 
       if (mess->kill > 0){
-	printf("broadcast server: client list updated\n");
+	printf("[broadcast server]: client list updated\n");
 	exit(0);
       }
     }
 
-    printf("broadcast server: messages > 0");
+    printf("[broadcast server]: messages > 0\n");
     down_sem(mess_sem);
   
-    for(i = 0; i < 10; i++){
+    for(i = 0; i < free_spot; i++){
       if (read(fds[i].from_sub, buffer, 256) > -1){
-	for(j = 0; j < 10; j++){
+	printf("[broadcast server]: broadcasting %s", buffer);
+	for(j = 0; j < free_spot; j++){
 	  if (j != i)
 	    write(fds[j].to_sub, buffer, 256);
 	}
@@ -166,7 +188,7 @@ void broadcast(union sub_fds *fds, int mess_shm, int mess_sem){
     mess->ready = 0;
     up_sem(mess_sem);
     
-    printf("broadcast server: message(s) broadcasted");
+    printf("[broadcast server]: message(s) broadcasted\n");
   }
 }
 
@@ -176,8 +198,8 @@ void print_servers(){
 
 void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler) {
   char buffer[BUFFER_SIZE];
-  union messages *mess;
-  mess = (union messages *)shmat(mess_shm, NULL, 0);
+  struct messages *mess;
+  mess = (struct messages *)shmat(mess_shm, NULL, 0);
 
   while (read(client_socket, buffer, sizeof(buffer))) {
 
@@ -185,10 +207,10 @@ void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler) {
     down_sem(mess_sem);
     write(to_handler, buffer, sizeof(buffer));
     printf("[clientserver %d] wrote to handler\n", getpid());
-    mess->ready++;
+    mess->ready += 1;
     up_sem(mess_sem);
     //printf("sem val:%d\n", semget(
-    printf("number of pending messages: %d\n", (*mess).ready);
+    printf("number of pending messages: %d\n", mess->ready);
     
     
   }//end read loop

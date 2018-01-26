@@ -11,7 +11,7 @@ int create_sem(){
 }
 
 int create_shm(){
-  int shm_id = shmget(SHM_KEY, sizeof(union messages), IPC_CREAT | 0644);
+  int shm_id = shmget(SHM_KEY, sizeof(struct messages), IPC_CREAT | 0644);
   return shm_id;
 }
 

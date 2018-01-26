@@ -88,7 +88,7 @@ int client_setup(char * server) {
   int sd, i;
 
   //create the socket
-  sd = socket( AF_INET, SOCK_STREAM | SO_REUSEADDR, 0 );
+  sd = socket( AF_INET, SOCK_STREAM, 0 );
   error_check( sd, "client socket" );
 
   //run getaddrinfo

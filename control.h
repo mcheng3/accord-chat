@@ -19,12 +19,12 @@ union semun {
     struct seminfo *    __buf;
 };
 
-union sub_fds{
+struct sub_fds{
   int from_sub;
   int to_sub;
 };
 
-union messages{
+struct messages{
   int kill;
   int ready;
 };
