@@ -410,6 +410,14 @@ int react(){
     return 0;
 }
 int hang = 0;
+char * rm_brackets(char *phrase){
+	if(strcspn(phrase, "[") == (strlen(phrase) - 1) && strcspn(phrase, "[") == 0){
+		phrase[strlen(phrase)-1] = '\0';
+		phrase++;
+
+	}
+	return phrase;
+}
 int main(int argc, char **argv) {
 
 	int server_socket;
@@ -453,7 +461,7 @@ int main(int argc, char **argv) {
 			}
 			else if(strcmp(s,"!hangman") == 0){
 				hang = 1;
-				display_message("hangedman","waiting for word");
+				display_message("hangman","waiting for word");
 				write(server_socket,"playing hangman, waiting for word, put word in brackets plz []",sizeof(write_buffer));
 			}
 			free(s);
