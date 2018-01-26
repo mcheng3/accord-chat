@@ -1,9 +1,9 @@
 # Accord Chat
-
+Accord is a terminal-based chatting program where several clients connect to a server and talk in real time.
 
 
 ## How to Setup
-You should run `$ make` and do one of the following:
+You should run `$ make accord` and do one of the following:
 * `$ ./accord-server` if you want to host an accord server.
 * `$ ./accord-client <ip>` if you wish to connect to an accord server.
 
