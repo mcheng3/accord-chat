@@ -2,6 +2,7 @@
 #include "networking.h"
 #include "control.h"
 
+
 void process(char *s);
 void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler);
 void print_servers();
@@ -103,7 +104,7 @@ int main() {
     }
 
     else{
-    
+      
       //main server
       int listen_socket;
       listen_socket = server_setup();
@@ -202,7 +203,9 @@ void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler) {
   mess = (struct messages *)shmat(mess_shm, NULL, 0);
 
   while (read(client_socket, buffer, sizeof(buffer))) {
-
+    if(!strcmp(buffer,"!")){
+      printf("ALERT\n");
+    }
     printf("[clientserver %d] received: [%s]\n", getpid(), buffer);
     down_sem(mess_sem);
     write(to_handler, buffer, sizeof(buffer));

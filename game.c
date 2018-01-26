@@ -26,6 +26,8 @@ int hangman(char *phrase){
     noecho();
     cbreak();
     curs_set(FALSE);
+    init_pair(2, COLOR_BLACK, COLOR_WHITE);
+    wbkgd( stdscr ,COLOR_PAIR(2));
     clear();
     nodelay(stdscr, FALSE);
     char *f = malloc(sizeof(phrase) * 2);
@@ -134,7 +136,7 @@ int react(){
             mvprintw(max_y/2, max_x/2-10, "You pressed too early!");
             refresh();
             sleep(2);
-            //return 0;
+            return 0;
             //
         }
         else{
@@ -160,7 +162,7 @@ int react(){
     return 0;
 }
 
-int main(int argc, char *argv[]) {
+/*int main(int argc, char *argv[]) {
 
  // Global var `stdscr` is created by the call to `initscr()`
 
@@ -174,3 +176,4 @@ int main(int argc, char *argv[]) {
     //react();
     endwin();
 }
+*/
