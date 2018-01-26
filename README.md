@@ -14,3 +14,5 @@ You can play two games in Accord which are accessed with their own in-chat comma
 
 ## Known Issues
 If you exit out of server, sometimes the port will become unusable and thus you can not run the accord server again. In this case, simply type '$ killall accord-server' and the issue should be resolved.
+
+It is recommended to not send the server a SIGINT when you want it to stop, but rather type `$ exit` in order to manage memory properly.
