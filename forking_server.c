@@ -202,7 +202,6 @@ void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler) {
   printf("[subserver]: attaching mess...\n");
   struct messages *mess;
   mess = (struct messages *)shmat(mess_shm, NULL, 0);
-<<<<<<< HEAD
   printf("[subserver]: mess attached\n");
   char *username = (char *)calloc(20, sizeof(char));
   
