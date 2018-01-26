@@ -129,8 +129,8 @@ int main() {
 
 	  //client interaction
 	  if (f == 0){
+	    printf("subserver called\n");
 	    subserver(client_socket, mess_sem, mess_shm,to_handler);
-	    close(client_socket);
 	  }
 
 	  //broadcast interaction
@@ -179,8 +179,8 @@ void broadcast(struct sub_fds *fds, int mess_shm, int mess_sem, int free_spot){
       if (read(fds[i].from_sub, buffer, 256) > -1){
 	printf("[broadcast server]: broadcasting %s", buffer);
 	for(j = 0; j < free_spot; j++){
-	  if (j != i)
-	    write(fds[j].to_sub, buffer, 256);
+	  
+	  write(fds[j].to_sub, buffer, 256);
 	}
       }
     }
@@ -197,23 +197,39 @@ void print_servers(){
 }
 
 void subserver(int client_socket, int mess_sem, int mess_shm, int to_handler) {
-  char buffer[BUFFER_SIZE];
+  char buffer[256];
+  printf("[subserver]: attaching mess...\n");
   struct messages *mess;
   mess = (struct messages *)shmat(mess_shm, NULL, 0);
+  printf("[subserver]: mess attached\n");
+  char *username = (char *)calloc(20, sizeof(char));
+  
+  strcpy(buffer, "Enter a username: \n");
+  printf("[subserver]: asking for username...\n");
+  write(client_socket, buffer, sizeof(buffer));
+  read(client_socket, username, 17);
+  char *end = strchr(username, '\n');
+  end = 0;
+  printf("username added: %s\n", username);
+  strcat(username, ": ");
+  int username_len = strlen(username);
 
-  while (read(client_socket, buffer, sizeof(buffer))) {
+  while (read(client_socket, buffer, sizeof(buffer) - strlen(username))) {
 
     printf("[clientserver %d] received: [%s]\n", getpid(), buffer);
+    strcat(username, buffer);
     down_sem(mess_sem);
-    write(to_handler, buffer, sizeof(buffer));
+    write(to_handler, username, strlen(username));
     printf("[clientserver %d] wrote to handler\n", getpid());
     mess->ready += 1;
     up_sem(mess_sem);
+    username[username_len] = 0;
     //printf("sem val:%d\n", semget(
     printf("number of pending messages: %d\n", mess->ready);
     
     
   }//end read loop
+  free(username);
   close(client_socket);
   exit(0);
 }
