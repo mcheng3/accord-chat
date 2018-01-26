@@ -1,29 +1,16 @@
 .PHONY: chat_interface_test
+	
 
-forking: client fserver
+accord: client server
 
-select: sclient sserver
-
-sserver: select_server.o networking.o
-	gcc -o server select_server.o networking.o
-
-fserver: forking_server.o networking.o control.o pipe_networking.o
-	gcc -o server forking_server.o networking.o control.o pipe_networking.o -lncurses
-
-sclient: select_client.o networking.o
-	gcc -o client select_client.o networking.o
+server: forking_server.o networking.o control.o pipe_networking.o
+	gcc -o accord-server forking_server.o networking.o control.o pipe_networking.o -lncurses
 
 client: networking.o chat_interface.c chat_interface.h dqueue.o
-	gcc -o client networking.o chat_interface.c dqueue.o -lncurses
-
-select_client.o: select_client.c networking.h
-	gcc -c select_client.c
+	gcc -o accord-client networking.o chat_interface.c dqueue.o -lncurses
 
 client.o: client.c networking.h
 	gcc -c client.c
-
-select_server.o: select_server.c networking.h
-	gcc -c select_server.c
 
 forking_server.o: forking_server.c networking.h control.h pipe_networking.h
 	gcc -c forking_server.c
@@ -47,5 +34,4 @@ pipe_networking.o: pipe_networking.c pipe_networking.h
 	gcc -c pipe_networking.c 
 clean:
 	rm *.o
-	rm *~
-	killall server
+	killall accord-server
