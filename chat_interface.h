@@ -94,4 +94,8 @@ returns return value of poll
 which is 0 if timed out and something bigger than 0 if not
 */
 
+void refresh_all();/*
+exactly what it says
+*/
+
 #endif

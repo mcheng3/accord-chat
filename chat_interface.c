@@ -230,6 +230,14 @@ int update_display_through_pipe(){
 	return retpoll;
 }
 
+void refresh_all(){
+	refresh();
+	wrefresh(input_win);
+	wrefresh(output_win);
+	wrefresh(message_win);
+	wrefresh(status_bar);
+}
+
 int main(){
 	init();
 	refresh();
