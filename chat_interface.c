@@ -423,7 +423,7 @@ int main(int argc, char **argv) {
 	int server_socket;
 	char write_buffer[256];
 	char read_buffer[256];
-
+	char hangman_buffer[256];
 	if (argc == 2)
 		server_socket = client_setup( argv[1]);
 	else
@@ -439,7 +439,9 @@ int main(int argc, char **argv) {
 				read(server_socket, read_buffer, sizeof(read_buffer));
 				if(hang){
 					if(strstr(read_buffer,"[") != NULL){
-						hangman(rm_brackets(read_buffer));
+						strcpy(hangman_buffer,read_buffer);
+						char * a = rm_brackets(hangman_buffer);
+						hangman("test");
 						hang = 0;
 						after_game_clean_up();
 					}
