@@ -1,5 +1,4 @@
 #include "networking.h"
-#include "chat_interface.h"
 int main(int argc, char **argv) {
 
 	int server_socket;

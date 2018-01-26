@@ -39,6 +39,7 @@ void create_input_window(int maxy, int maxx){
 	int height = lines_for_input_window(maxx);
 	input_win = newwin(height, maxx, maxy - height,0);
 	keypad(input_win,TRUE);
+	wtimeout(input_win,200);
 }
 
 void create_output_window(int maxy, int maxx){
@@ -250,19 +251,22 @@ int main(int argc, char **argv) {
 	else
 		server_socket = client_setup( CS16 );
 
-
+	init();
+	refresh_all();
 	set_display_pipe(server_socket);
 	while(1){
 		int retpoll = poll(poll_structs,1,0);
 		if(retpoll > 0){
 			if(poll_structs[0].revents & POLLIN){
 				read(server_socket, read_buffer, sizeof(read_buffer));
-				printf("%s", read_buffer);
+				display_message("some_username",read_buffer);
 			}
 		}
-		printf(":");
-		fgets(write_buffer, sizeof(write_buffer), stdin);
+		tick();
 		//*strchr(write_buffer, '\n') = 0;
-		write(server_socket, write_buffer, sizeof(write_buffer));
+		if(ready_to_send){
+			char * s = pop_input_buffer();
+			write(server_socket, s, sizeof(write_buffer));
+		}
 	}
 }
