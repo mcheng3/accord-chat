@@ -1,8 +1,13 @@
 # Accord Chat
-Accord is a terminal-based chatting program where several clients connect to a server and talk in real time.
+### Ricky Chen, Michael Cheng, Edmond Wong
+
+Accord is a terminal-based chatting program where several clients connect to a server and talk to each other real time.
 
 
 ## How to Setup
+
+Requires ncurses library.
+`$ sudo apt-get install libncurses5-dev libncursesw5-dev`
 
 You should run `$ make accord` and do one of the following:
 * `$ ./accord-server` if you want to host an accord server.
