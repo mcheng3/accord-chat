@@ -438,11 +438,8 @@ int main(int argc, char **argv) {
 			if(poll_structs[0].revents & POLLIN){
 				read(server_socket, read_buffer, sizeof(read_buffer));
 				if(hang){
-					//parse read_buffer here
-					int hasBrackets = 0;
-					char word[50];
-					if(hasBrackets){
-						hangman(word);
+					if(strstr(read_buffer,"[") != NULL){
+						hangman(rm_brackets(read_buffer));
 						hang = 0;
 						after_game_clean_up();
 					}
@@ -462,7 +459,7 @@ int main(int argc, char **argv) {
 			else if(strcmp(s,"!hangman") == 0){
 				hang = 1;
 				display_message("hangman","waiting for word");
-				write(server_socket,"playing hangman, waiting for word, put word in brackets plz []",sizeof(write_buffer));
+				write(server_socket,"playing hangman, waiting for word, put word in brackets plz",sizeof(write_buffer));
 			}
 			free(s);
 		}
